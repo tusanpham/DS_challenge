@@ -1,0 +1,433 @@
+<!doctype html>
+<!-- san-slides template. Stage + print rules adapted from zarazhangrui/frontend-slides (MIT);
+     edit-in-browser idea from archlizheng/frontend-slides-editable (MIT). -->
+<html lang="en" data-theme="light" data-footer="" data-deck-id="stm-recommendations-b430ca83">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STM Metro Incidents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens ---------- */
+:root {
+  --ease: cubic-bezier(.32,.72,0,1);
+  --sans: "Geist", system-ui, sans-serif;
+  --mono: "Geist Mono", ui-monospace, Menlo, monospace;
+  --gold: #E7C15B; --wash: #DCE9EB; --wash-deep: #B9D2D8;
+  --slate: #41626B; --foundation: #202928; --error: #F04C3A; --success: #2E6A33;
+}
+[data-theme="light"] {
+  --bg: #FAFAF7; --surface: #FFFFFF; --stone: #F1EFE6; --line: #E7E6E1;
+  --fg: #0C0D0E; --muted: #5C6063; --accent-text: #0C0D0E; --stage-bg: #E7E6E1;
+}
+[data-theme="dark"] {
+  --bg: #202928; --surface: rgba(250,250,247,.05); --stone: rgba(250,250,247,.08); --line: rgba(250,250,247,.16);
+  --fg: #FAFAF7; --muted: rgba(250,250,247,.66); --accent-text: #E7C15B; --stage-bg: #0C0D0E;
+}
+
+/* ---------- fixed 1920x1080 stage, scaled to the window ---------- */
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--stage-bg); }
+.stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; overflow: hidden; }
+.slide {
+  position: absolute; inset: 0; box-sizing: border-box; padding: 112px 144px 136px;
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--bg); color: var(--fg); font: 400 34px/1.45 var(--sans);
+  visibility: hidden; opacity: 0;
+}
+.slide.active { visibility: visible; opacity: 1; z-index: 1; }
+
+/* ---------- type ---------- */
+h1, h2, h3, p, ul, ol, blockquote { margin: 0; }
+h1 { font-weight: 300; font-size: 128px; line-height: 1.04; letter-spacing: -.025em; }
+h2 { font-weight: 300; font-size: 76px; line-height: 1.08; letter-spacing: -.025em; max-width: 1500px; }
+h3 { font-weight: 600; font-size: 38px; line-height: 1.2; }
+.lede { font-size: 40px; color: var(--muted); max-width: 1300px; }
+.muted { color: var(--muted); }
+.eyebrow {
+  display: flex; align-items: center; gap: 22px; margin-bottom: 40px;
+  font: 500 22px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
+}
+.eyebrow::before { content: ""; width: 52px; height: 3px; background: var(--gold); flex: none; }
+ul.points { list-style: none; padding: 0; display: grid; gap: 26px; max-width: 1400px; }
+ul.points li { padding-left: 46px; position: relative; }
+ul.points li::before { content: ""; position: absolute; left: 0; top: .62em; width: 20px; height: 3px; background: var(--gold); }
+strong, .hl { font-weight: 600; }
+.hl { box-shadow: inset 0 -.32em 0 color-mix(in srgb, var(--gold) 55%, transparent); }
+code, .mono { font-family: var(--mono); font-size: .86em; }
+
+/* ---------- building blocks ---------- */
+.body { margin-top: 64px; flex: 1; min-height: 0; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; }
+.cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 2px; padding: 48px; }
+.panel.wash { background: var(--wash); border-color: var(--wash-deep); color: #0C0D0E; }
+.panel.stone { background: var(--stone); border-color: var(--line); }
+.panel h3 { margin-bottom: 18px; }
+.stat-n { font: 700 132px/1 var(--mono); letter-spacing: -.04em; color: var(--accent-text); }
+.stat-l { margin-top: 20px; color: var(--muted); font-size: 30px; max-width: 460px; }
+.source { position: absolute; left: 144px; bottom: 80px; font: 400 20px/1.3 var(--mono); color: var(--muted); }
+
+/* ---------- layouts ---------- */
+.cover { justify-content: center; }
+.cover h1 { max-width: 1400px; }
+.cover .lede { margin-top: 48px; }
+.cover .meta { position: absolute; left: 144px; bottom: 112px; font: 500 22px/1.5 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.cover .disc { position: absolute; right: -220px; bottom: -220px; width: 760px; height: 760px; border-radius: 50%; background: var(--gold); }
+.section { justify-content: center; }
+.section .num { font: 300 240px/1 var(--mono); color: var(--muted); letter-spacing: -.04em; }
+.section .bar { width: 160px; height: 8px; background: var(--gold); margin: 48px 0 56px; }
+.quote { justify-content: center; }
+.quote blockquote { font-weight: 300; font-size: 88px; line-height: 1.12; letter-spacing: -.025em; max-width: 1500px; }
+.quote blockquote::before { content: ""; display: block; width: 120px; height: 8px; background: var(--gold); margin-bottom: 64px; }
+.quote cite { display: block; margin-top: 56px; font: 500 24px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; font-style: normal; color: var(--muted); }
+.closing { justify-content: center; background: var(--foundation); color: #FAFAF7; --muted: rgba(250,250,247,.66); --line: rgba(250,250,247,.16); }
+[data-theme="dark"] .closing { background: #0C0D0E; }
+
+/* ---------- chrome (not editable, filled by JS) ---------- */
+.chrome { position: absolute; left: 144px; right: 144px; bottom: 56px; display: flex; justify-content: space-between;
+  font: 500 20px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); pointer-events: none; }
+.cover .chrome, .section .chrome { display: none; }
+.progress { position: absolute; left: 0; top: 0; height: 4px; background: var(--gold); transition: width .5s var(--ease); z-index: 5; }
+
+/* ---------- entrance: one calm staggered rise ---------- */
+.slide.active .reveal > * { animation: rise .7s var(--ease) both; }
+.slide.active .reveal > *:nth-child(2) { animation-delay: .08s; }
+.slide.active .reveal > *:nth-child(3) { animation-delay: .16s; }
+.slide.active .reveal > *:nth-child(4) { animation-delay: .24s; }
+.slide.active .reveal > *:nth-child(n+5) { animation-delay: .32s; }
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ---------- edit mode toolbar ---------- */
+.toolbar { position: fixed; right: 16px; bottom: 16px; display: none; gap: 6px; z-index: 10; font: 500 13px var(--mono); }
+.edit .toolbar { display: flex; }
+.toolbar button { font: inherit; padding: 8px 12px; border: 1px solid #5C6063; border-radius: 2px; background: #FAFAF7; color: #0C0D0E; cursor: pointer; }
+.edit [contenteditable] { outline: 1px dashed color-mix(in srgb, var(--gold) 70%, transparent); outline-offset: 6px; }
+.edit [contenteditable]:focus { outline-style: solid; }
+
+/* ---------- print / PDF: one slide per 1920x1080 page ---------- */
+@page { size: 1920px 1080px; margin: 0; }
+@media print {
+  html, body { overflow: visible; height: auto; background: none; }
+  .stage { position: static; transform: none !important; width: 1920px; height: auto; overflow: visible; }
+  .slide { position: relative; visibility: visible; opacity: 1; width: 1920px; height: 1080px; break-after: page; }
+  .slide:last-child { break-after: auto; }
+  .reveal > * { animation: none !important; }
+  .progress, .toolbar { display: none !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* ---------- deck-specific: answer table, charts ---------- */
+table.ans { width: 100%; border-collapse: collapse; font-size: 30px; }
+table.ans th, table.ans td { text-align: left; vertical-align: top; padding: 30px 28px 30px 0; border-top: 1px solid var(--line); }
+table.ans tr:last-child th, table.ans tr:last-child td { border-bottom: 1px solid var(--line); }
+table.ans th { width: 330px; font-weight: 600; }
+table.ans td.v { width: 270px; font-weight: 600; }
+table.ans td:last-child { color: var(--muted); }
+.note { margin-top: 40px; font-size: 28px; }
+.chart-row { display: grid; grid-template-columns: 640px 1fr; gap: 72px; align-items: center; }
+.chart-row ul.points { font-size: 30px; }
+.chart { width: 100%; height: auto; font-family: var(--mono); }
+.chart .cap { font-size: 22px; fill: var(--muted); }
+.chart .axis { stroke: var(--line); stroke-width: 2; }
+.chart .bar { fill: var(--wash-deep); }
+.chart .bar.gold, .chart .dot { fill: var(--gold); }
+.chart .val, .chart .yr { font-size: 26px; fill: var(--muted); text-anchor: middle; }
+.chart .lbl { font-size: 24px; fill: var(--muted); dominant-baseline: middle; }
+.chart .strong { fill: var(--fg); font-weight: 700; }
+.chart .ln { fill: none; stroke: color-mix(in srgb, var(--muted) 45%, transparent); stroke-width: 4; stroke-linejoin: round; }
+.chart .ln.slate { stroke: var(--slate); }
+.chart .ln.gold { stroke: var(--gold); stroke-width: 7; }
+[data-theme="dark"] .chart .bar:not(.gold) { fill: var(--slate); }
+.muted-n { color: var(--muted); }
+h2 { text-wrap: balance; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+<div class="progress" id="progress"></div>
+
+<!-- ===== SLIDES: replace everything between the markers. Layout examples below. ===== -->
+
+<section class="slide cover">
+  <div class="disc"></div>
+  <div class="reveal">
+    <div class="eyebrow">STM metro · incidents 2019-2025</div>
+    <h1>Metro incidents: what changed and what to do</h1>
+    <p class="lede">"Major" here means a customer-service delay of 10 minutes or more. It is my assumption, to be set with Operations.</p>
+  </div>
+  <div class="meta">Montréal open data · 2019-2025</div>
+</section>
+
+<section class="slide">
+  <div class="reveal">
+    <div class="eyebrow">The question</div>
+    <h2>Direction sees incidents rising and cannot tell why</h2>
+    <div class="body">
+      <p class="lede">Is the trend reliability, service volume, reporting practices or classification consistency?</p>
+      <div class="cols-3" style="margin-top:72px">
+        <div class="panel stone"><h3>VP Operations</h3><p class="muted">Earlier escalation, less disruption</p></div>
+        <div class="panel stone"><h3>CFO</h3><p class="muted">Where to spend, with what confidence</p></div>
+        <div class="panel stone"><h3>Public Affairs / Safety</h3><p class="muted">Rider impact, rare severe events</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="reveal">
+    <div class="eyebrow">The answer</div>
+    <h2>Disruption is up. Volume is not the cause, and equipment reliability is flat</h2>
+    <div class="body">
+      <table class="ans">
+        <tr><th>Service volume</th><td class="v">No</td><td>Planned km fell 6% (2019 to 2022); major incidents per million km rose 50% (2019 to 2023, Jan-Sep)</td></tr>
+        <tr><th>Reporting practices</th><td class="v">Partly</td><td>Raw counts include no-delay incidents; Apr-Sep 2025 runs 15-52% short; duration and clock disagree on 1.2% → 2.3% of train incidents</td></tr>
+        <tr><th>Reliability</th><td class="v"><span class="hl">Disruption up</span></td><td>Major train incidents 258 (2019) → 365 (2024). Customer-caused 126 → 222; rolling stock 47 → 46</td></tr>
+      </table>
+      <p class="muted note">Classification does not drive the trend: major incidents are counted from incident type and duration category alone.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="reveal">
+    <div class="eyebrow">Before reading any trend</div>
+    <h2>Read raw, the file points the wrong way three times</h2>
+    <div class="body cols-3">
+      <div class="panel stone"><h3>Station incidents are not interruptions</h3><p class="muted">36% of the file. The STM states they do not affect metro service.</p></div>
+      <div class="panel stone"><h3>Station incidents get no cause</h3><p class="muted">By design: the STM uses the symptom as their cause, so the cause field only describes train incidents.</p></div>
+      <div class="panel stone"><h3>2025 is not an improvement</h3><p class="muted">Train incidents are published late. April-September 2025 is incomplete and left out.</p></div>
+    </div>
+  </div>
+  <div class="source">Everything that follows uses train incidents only.</div>
+</section>
+
+<section class="slide">
+  <div class="reveal">
+    <div class="eyebrow">What changed, 2019-2024</div>
+    <h2>Major incidents per km rose 50% by 2023</h2>
+    <div class="body chart-row">
+      <ul class="points">
+        <li><strong>To 2022</strong>, the major share rose because minor incidents fell. Major ones held at 247-273 a year</li>
+        <li><strong>From 2023</strong>, major incidents rose: 335 in 2023, 365 in 2024</li>
+        <li><strong>The line driving it changes:</strong> green in early 2023, orange in 2024 (104 → 153)</li>
+      </ul>
+      <svg class="chart" viewBox="0 0 900 580" role="img" aria-label="Major train incidents per million planned km, January to September: 2.74 in 2019, 2.79 in 2020, 3.17 in 2021, 3.21 in 2022, 4.11 in 2023">
+        <text x="40" y="28" class="cap">Major (10+ min) per million planned km, Jan-Sep</text>
+        <line x1="40" y1="480" x2="880" y2="480" class="axis"/>
+        <rect x="60"  y="224" width="110" height="256" class="bar"/>
+        <rect x="228" y="220" width="110" height="260" class="bar"/>
+        <rect x="396" y="184" width="110" height="296" class="bar"/>
+        <rect x="564" y="180" width="110" height="300" class="bar"/>
+        <rect x="732" y="96"  width="110" height="384" class="bar gold"/>
+        <text x="115" y="206" class="val">2.74</text><text x="283" y="202" class="val">2.79</text>
+        <text x="451" y="166" class="val">3.17</text><text x="619" y="162" class="val">3.21</text>
+        <text x="787" y="78" class="val strong">4.11</text>
+        <text x="115" y="522" class="yr">2019</text><text x="283" y="522" class="yr">2020</text>
+        <text x="451" y="522" class="yr">2021</text><text x="619" y="522" class="yr">2022</text>
+        <text x="787" y="522" class="yr">2023</text>
+      </svg>
+    </div>
+  </div>
+  <div class="source">Planned km ends 2023-09, so 2023 is compared on Jan-Sep and 2024 is counts only. Source: notebooks/02_reliability.ipynb</div>
+</section>
+
+<section class="slide">
+  <div class="reveal">
+    <div class="eyebrow">Where the rise comes from</div>
+    <h2>The rise is customer-caused; rolling stock is flat</h2>
+    <div class="body chart-row">
+      <ul class="points">
+        <li><strong>Customer-caused:</strong> 126 (2019) → 222 (2024). Deliberate mischief alone 62 → 152</li>
+        <li><strong>Rolling stock</strong> flat; fixed equipment varies, then rises in 2024</li>
+        <li>Cause is set weeks later, but the symptom, recorded at declaration, shows the same rise</li>
+      </ul>
+      <svg class="chart" viewBox="0 0 1180 580" role="img" aria-label="Major train incidents by primary cause, 2019 to 2024. Customer: 126, 131, 130, 172, 210, 222. Fixed equipment: 54, 52, 60, 36, 48, 72. Rolling stock: 47, 40, 35, 32, 50, 46. Train operations: 16, 4, 6, 11, 10, 11">
+        <text x="40" y="28" class="cap">Major (10+ min) train incidents by primary cause</text>
+        <line x1="40" y1="480" x2="830" y2="480" class="axis"/>
+        <polyline points="60,452 210,473 360,469.5 510,460.75 660,462.5 810,460.75" class="ln"/>
+        <polyline points="60,385.5 210,389 360,375 510,417 660,396 810,354" class="ln"/>
+        <polyline points="60,397.75 210,410 360,418.75 510,424 660,392.5 810,399.5" class="ln slate"/>
+        <polyline points="60,259.5 210,250.75 360,252.5 510,179 660,112.5 810,91.5" class="ln gold"/>
+        <circle cx="60" cy="259.5" r="8" class="dot"/><circle cx="810" cy="91.5" r="8" class="dot"/>
+        <text x="60" y="236" class="val">126</text><text x="810" y="68" class="val strong">222</text>
+        <text x="836" y="100" class="lbl strong">Customer</text>
+        <text x="836" y="350" class="lbl">Fixed equipment 72</text>
+        <text x="836" y="404" class="lbl">Rolling stock 46</text>
+        <text x="836" y="466" class="lbl">Train operations 11</text>
+        <text x="60" y="522" class="yr">2019</text><text x="210" y="522" class="yr">2020</text>
+        <text x="360" y="522" class="yr">2021</text><text x="510" y="522" class="yr">2022</text>
+        <text x="660" y="522" class="yr">2023</text><text x="810" y="522" class="yr">2024</text>
+      </svg>
+    </div>
+  </div>
+  <div class="source">Single-line train incidents, full years. Source: notebooks/02_reliability.ipynb</div>
+</section>
+
+<section class="slide">
+  <div class="reveal">
+    <div class="eyebrow">Prediction at declaration</div>
+    <h2>A major incident is only weakly predictable when it is declared</h2>
+    <div class="body cols-3">
+      <div><div class="stat-n">20%</div><div class="stat-l">of major incidents caught when the 10% most at-risk are flagged</div></div>
+      <div><div class="stat-n muted-n">16%</div><div class="stat-l">caught using the symptom alone</div></div>
+      <div><div class="stat-n muted-n">10%</div><div class="stat-l">caught by flagging at random</div></div>
+    </div>
+    <ul class="points" style="margin-top:8px">
+      <li>A <span class="hl">symptom x location table</span> does as well as a statistical model, and fits on a printed page</li>
+      <li>A triage aid, not an escalation rule: at a 10% alert budget it misses about 80% of major incidents</li>
+    </ul>
+  </div>
+  <div class="source">Backtest on 2022, 2023 and 2024, each scored by a model fit on earlier years. Source: README.md, Prediction</div>
+</section>
+
+<section class="slide">
+  <div class="reveal">
+    <div class="eyebrow">How to measure reliability</div>
+    <h2>Track major incidents per million km, split controllable vs external</h2>
+    <div class="body">
+      <ul class="points">
+        <li><strong>A rate, not a count:</strong> major train incidents per million km, by line, monthly</li>
+        <li><strong>Two parts:</strong> controllable (rolling stock, fixed equipment, operations) and external (customer). They have moved differently since 2022</li>
+        <li><strong>Station incidents stay out</strong> of the service measure: they carry no delay</li>
+        <li><strong>Hold back months still filling in:</strong> train incidents arrive 30+ days late</li>
+        <li><strong>30+ min events as a rate with an interval:</strong> about 70 a year</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="reveal">
+    <div class="eyebrow">How to prioritize action</div>
+    <h2>Each stakeholder has a different next step</h2>
+    <div class="body cols-3">
+      <div class="panel stone"><h3>VP Operations</h3><p class="muted">Target customer-caused incidents, mostly deliberate mischief, not equipment. Watch the monthly rate by line: the line driving it changes. Use the symptom x location table to order incidents at declaration.</p></div>
+      <div class="panel stone"><h3>CFO</h3><p class="muted">This data cannot measure financial burden: no cost, no ridership. Usable proxy: delay-minutes by line and year, weighted by peak hours.</p></div>
+      <div class="panel stone"><h3>Public Affairs / Safety</h3><p class="muted">Quote 30+ min events as rates with intervals. Do not quote 2025 figures yet. The triage table does not single out severe events.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="reveal">
+    <div class="eyebrow">How to improve data collection</div>
+    <h2>Five data fixes would answer what this data cannot</h2>
+    <div class="body">
+      <ul class="points">
+        <li><strong>Record the exact delay in minutes</strong>, and document the duration field (missing from the data dictionary)</li>
+        <li><strong>Timestamp each flag</strong> (emergency brake, material damage, lines affected): what limits prediction most</li>
+        <li><strong>Publish km after September 2023</strong>, and actual km next to planned km</li>
+        <li><strong>Add ridership and a cost per incident</strong>, for the CFO and Public Affairs questions</li>
+        <li><strong>Mark which months are complete</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide closing">
+  <div class="reveal">
+    <div class="eyebrow">What this data cannot tell you</div>
+    <h2>Four questions stay open until the data changes</h2>
+    <div class="body">
+      <ul class="points">
+        <li><strong>Cost and rider impact:</strong> no cost, ridership or station volume data</li>
+        <li><strong>Per-km rates after September 2023:</strong> the 2024 findings are counts</li>
+        <li><strong>Why customer-caused incidents rose:</strong> needs ridership and security data</li>
+        <li><strong>Whether causes are recorded consistently:</strong> they are assigned by a later analysis</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== END SLIDES ===== -->
+</div>
+
+<div class="toolbar">
+  <button data-act="up">↑ move</button><button data-act="down">↓ move</button>
+  <button data-act="dup">duplicate</button><button data-act="del">delete</button>
+  <button data-act="export">export html</button>
+</div>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const slides = () => [...stage.querySelectorAll('.slide')];
+  const TEXT = 'h1,h2,h3,p,li,blockquote,cite,.eyebrow,.stat-n,.stat-l,.source,.meta,.num,td,th';
+  let i = Math.max(0, (parseInt(location.hash.slice(1)) || 1) - 1);
+
+  function fit() {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `translate(${(innerWidth - 1920 * s) / 2}px,${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+  }
+  function chrome() {
+    const all = slides(), foot = document.documentElement.dataset.footer || '';
+    all.forEach((el, n) => {
+      el.querySelector(':scope > .chrome')?.remove();
+      const c = document.createElement('div');
+      c.className = 'chrome';
+      c.innerHTML = `<span></span><span>${String(n + 1).padStart(2, '0')} / ${String(all.length).padStart(2, '0')}</span>`;
+      c.firstChild.textContent = foot;
+      el.appendChild(c);
+    });
+  }
+  function show(n) {
+    const all = slides();
+    i = Math.max(0, Math.min(all.length - 1, n));
+    all.forEach((el, k) => el.classList.toggle('active', k === i));
+    document.getElementById('progress').style.width = `${((i + 1) / all.length) * 100}%`;
+    history.replaceState(null, '', `#${i + 1}`);
+  }
+  function setEdit(on) {
+    document.body.classList.toggle('edit', on);
+    stage.querySelectorAll(TEXT).forEach(el => {
+      if (el.closest('.chrome')) return;
+      on ? el.setAttribute('contenteditable', 'true') : el.removeAttribute('contenteditable');
+    });
+  }
+  function exportHtml() {
+    const wasEdit = document.body.classList.contains('edit');
+    setEdit(false);
+    const doc = document.documentElement.cloneNode(true);
+    doc.querySelectorAll('.chrome').forEach(e => e.remove());
+    doc.querySelectorAll('.slide').forEach(e => e.classList.remove('active'));
+    doc.querySelector('.stage').removeAttribute('style');
+    doc.querySelector('body').classList.remove('edit');
+    const blob = new Blob(['<!doctype html>\n' + doc.outerHTML], { type: 'text/html' });
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: location.pathname.split('/').pop() || 'deck.html' });
+    a.click(); URL.revokeObjectURL(a.href);
+    if (wasEdit) setEdit(true);
+  }
+  // shortcut: slide ops have no undo; text edits use the browser's native undo. Add a history stack if decks get edited heavily.
+  function act(kind) {
+    const cur = slides()[i];
+    if (kind === 'up' && cur.previousElementSibling?.classList.contains('slide')) { cur.previousElementSibling.before(cur); i--; }
+    if (kind === 'down' && cur.nextElementSibling?.classList.contains('slide')) { cur.nextElementSibling.after(cur); i++; }
+    if (kind === 'dup') { cur.after(cur.cloneNode(true)); i++; }
+    if (kind === 'del' && slides().length > 1) cur.remove();
+    if (kind === 'export') return exportHtml();
+    chrome(); setEdit(true); show(i);
+  }
+
+  document.querySelector('.toolbar').addEventListener('click', e => e.target.dataset.act && act(e.target.dataset.act));
+  addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); return exportHtml(); }
+    if (e.target.isContentEditable) { if (e.key === 'Escape') e.target.blur(); return; }
+    const k = e.key;
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(k)) { e.preventDefault(); show(i + 1); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(k)) { e.preventDefault(); show(i - 1); }
+    else if (k === 'Home') show(0);
+    else if (k === 'End') show(slides().length - 1);
+    else if (k === 'e' || k === 'E') setEdit(!document.body.classList.contains('edit'));
+    else if (k === 't' || k === 'T') { const h = document.documentElement; h.dataset.theme = h.dataset.theme === 'dark' ? 'light' : 'dark'; }
+    else if (k === 'f' || k === 'F') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  });
+  addEventListener('resize', fit);
+  fit(); chrome(); show(i);
+  window.deck = { show, count: () => slides().length };  // used by scripts/deck.py
+})();
+</script>
+</body>
+</html>
